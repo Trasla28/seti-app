@@ -1,0 +1,7 @@
+{
+  "name": "seti-app",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular-standalone"
+}
