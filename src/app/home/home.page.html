@@ -26,59 +26,80 @@
 
 <ion-content class="ion-padding">
 
-  <!-- CATEGORÍAS -->
-  <ion-card class="section-card">
-    <ion-card-header>
-      <div class="section-header">
-        <div>
-          <ion-card-title>Categorías</ion-card-title>
-          <ion-card-subtitle>Agrupa tus tareas por tema</ion-card-subtitle>
+  <!-- CATEGORÍAS habilitadas por feature flag -->
+  <ng-container *ngIf="featureFlags.enableCategories; else categoriesDisabled">
+    <ion-card class="section-card">
+      <ion-card-header>
+        <div class="section-header">
+          <div>
+            <ion-card-title>Categorías</ion-card-title>
+            <ion-card-subtitle>Agrupa tus tareas por tema</ion-card-subtitle>
+          </div>
+          <ion-button
+            fill="outline"
+            color="primary"
+            size="small"
+            (click)="addCategoryFromPrompt()"
+          >
+            <span class="plus-text">+</span>
+          </ion-button>
         </div>
-        <ion-button
-          fill="outline"
-          color="primary"
-          size="small"
-          (click)="addCategoryFromPrompt()"
-        >
-          <span class="plus-text">+</span>
-        </ion-button>
-      </div>
-    </ion-card-header>
+      </ion-card-header>
 
-    <ion-card-content>
-      <ion-list *ngIf="categories.length > 0; else noCategoriesTemplate">
-        <ion-item *ngFor="let cat of categories" class="category-item">
-          <ion-label>
-            <span class="category-name">{{ cat.name }}</span>
-          </ion-label>
+      <ion-card-content>
+        <ion-list *ngIf="categories.length > 0; else noCategoriesTemplate">
+          <ion-item *ngFor="let cat of categories" class="category-item">
+            <ion-label>
+              <span class="category-name">{{ cat.name }}</span>
+            </ion-label>
 
-          <ion-button
-            fill="outline"
-            size="small"
-            (click)="renameCategory(cat)"
-          >
-            Editar
-          </ion-button>
+            <ion-button
+              fill="outline"
+              size="small"
+              (click)="renameCategory(cat)"
+            >
+              Editar
+            </ion-button>
 
-          <ion-button
-            fill="outline"
-            size="small"
-            color="danger"
-            (click)="deleteCategory(cat)"
-          >
-            Eliminar
-          </ion-button>
-        </ion-item>
-      </ion-list>
+            <ion-button
+              fill="outline"
+              size="small"
+              color="danger"
+              (click)="deleteCategory(cat)"
+            >
+              Eliminar
+            </ion-button>
+          </ion-item>
+        </ion-list>
 
-      <ng-template #noCategoriesTemplate>
+        <ng-template #noCategoriesTemplate>
+          <p class="empty-text">
+            Aún no tienes categorías. Usa el botón <strong>+</strong> de la parte
+            superior para crear la primera.
+          </p>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+
+  <!-- Mensaje cuando el feature flag desactiva categorías -->
+  <ng-template #categoriesDisabled>
+    <ion-card class="section-card">
+      <ion-card-header>
+        <ion-card-title>Categorías desactivadas</ion-card-title>
+        <ion-card-subtitle>
+          Esta funcionalidad está deshabilitada por configuración remota
+          (feature flag).
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
         <p class="empty-text">
-          Aún no tienes categorías. Usa el botón <strong>+</strong> de la parte
-          superior para crear la primera.
+          El administrador puede activar de nuevo esta sección cambiando el
+          parámetro <code>enable_categories</code> en Firebase Remote Config.
         </p>
-      </ng-template>
-    </ion-card-content>
-  </ion-card>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 
   <!-- TAREAS -->
   <ion-card class="section-card">

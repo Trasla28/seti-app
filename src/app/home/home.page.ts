@@ -22,6 +22,7 @@ import {
   IonCardContent,
   IonButtons,
 } from '@ionic/angular/standalone';
+import { FeatureFlagService } from '../feature-flag.service';
 
 interface Task {
   id: number;
@@ -64,7 +65,6 @@ interface Category {
   ],
 })
 export class HomePage implements OnInit {
-
   // ====== tareas ======
   newTaskTitle = '';
   tasks: Task[] = [];
@@ -82,7 +82,13 @@ export class HomePage implements OnInit {
   // categoría seleccionada al CREAR una nueva tarea
   selectedCategoryIdForNewTask: string = ''; // '' = sin categoría
 
-  ngOnInit(): void {
+  constructor(public featureFlags: FeatureFlagService) {}
+
+  async ngOnInit(): Promise<void> {
+    // inicializamos Remote Config (si ya está cargado, no hace nada)
+    await this.featureFlags.init();
+
+    // luego cargamos datos locales
     this.loadCategoriesFromStorage();
     this.loadTasksFromStorage();
   }
@@ -124,7 +130,7 @@ export class HomePage implements OnInit {
   }
 
   deleteTask(task: Task) {
-    this.tasks = this.tasks.filter(t => t.id !== task.id);
+    this.tasks = this.tasks.filter((t) => t.id !== task.id);
     this.saveTasksToStorage();
   }
 
@@ -143,13 +149,13 @@ export class HomePage implements OnInit {
       return this.tasks;
     }
     return this.tasks.filter(
-      t => t.categoryId === this.selectedCategoryIdFilter
+      (t) => t.categoryId === this.selectedCategoryIdFilter
     );
   }
 
   getCategoryName(categoryId?: string | null): string {
     if (!categoryId) return 'Sin categoría';
-    const cat = this.categories.find(c => c.id === categoryId);
+    const cat = this.categories.find((c) => c.id === categoryId);
     return cat ? cat.name : 'Sin categoría';
   }
 
@@ -181,7 +187,10 @@ export class HomePage implements OnInit {
   }
 
   renameCategory(category: Category) {
-    const nuevoNombre = window.prompt('Nuevo nombre de la categoría', category.name);
+    const nuevoNombre = window.prompt(
+      'Nuevo nombre de la categoría',
+      category.name
+    );
     if (!nuevoNombre) return;
 
     category.name = nuevoNombre.trim();
@@ -189,10 +198,10 @@ export class HomePage implements OnInit {
   }
 
   deleteCategory(category: Category) {
-    this.categories = this.categories.filter(c => c.id !== category.id);
+    this.categories = this.categories.filter((c) => c.id !== category.id);
     this.saveCategoriesToStorage();
 
-    this.tasks = this.tasks.map(t =>
+    this.tasks = this.tasks.map((t) =>
       t.categoryId === category.id ? { ...t, categoryId: null } : t
     );
     this.saveTasksToStorage();
@@ -263,6 +272,10 @@ export class HomePage implements OnInit {
   }
 
   private generateId(): string {
-    return Date.now().toString() + '-' + Math.random().toString(36).substring(2, 8);
+    return (
+      Date.now().toString() +
+      '-' +
+      Math.random().toString(36).substring(2, 8)
+    );
   }
 }
