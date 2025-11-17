@@ -1,0 +1,14 @@
+{
+  "ios": {
+    "release": {
+      "codeSignIdentity": "iPhone Distribution",
+      "provisioningProfile": "<PROVISIONING_PROFILE_UUID_OR_NAME>",
+      "developmentTeam": "<TEAM_ID>",
+      "packageType": "app-store",
+      "provisioningProfilePath": "<path/to/your.mobileprovision>"
+    }
+  }
+}
+
+# Reemplaza los placeholders con tus datos. En Appflow normalmente subirás las credenciales desde el dashboard,
+# pero este archivo sirve de referencia si quieres firmar localmente con Cordova/Gradle.
