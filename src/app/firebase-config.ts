@@ -1,6 +1,6 @@
 // src/app/firebase-config.ts
 export const firebaseConfig = {
-  apiKey: 'AIzaSyD96t9mMkazKiNeXYekXUTln1bYg7_u9tE',
+  apiKey: 'API_KEY',
   authDomain: 'seti-app-5b21b.firebaseapp.com',
   projectId: 'seti-app-5b21b',
   storageBucket: 'seti-app-5b21b.firebasestorage.app',
