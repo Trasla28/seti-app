@@ -1,20 +1,46 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title>
-      Blank
+      To-Do List
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-input
+      placeholder="Nueva tarea..."
+      [(ngModel)]="newTaskTitle"
+      (keyup.enter)="addTask()">
+    </ion-input>
+    <ion-button (click)="addTask()" slot="end">
+      Agregar
+    </ion-button>
+  </ion-item>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <ion-list *ngIf="tasks.length > 0; else noTasksTemplate">
+    <ion-item *ngFor="let task of tasks; trackBy: trackByTaskId">
+      <ion-checkbox
+        slot="start"
+        [checked]="task.completed"
+        (ionChange)="toggleCompleted(task)">
+      </ion-checkbox>
+
+      <ion-label [ngClass]="{ 'task-completed': task.completed }">
+        {{ task.title }}
+      </ion-label>
+
+      <ion-button
+        fill="clear"
+        color="danger"
+        slot="end"
+        (click)="deleteTask(task)">
+        Eliminar
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noTasksTemplate>
+    <p>No tienes tareas aún. Agrega una arriba 👆</p>
+  </ng-template>
 </ion-content>
