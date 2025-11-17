@@ -1,46 +1,166 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      To-Do List
+      Mis tareas
     </ion-title>
+
+    <!-- Filtro arriba a la derecha -->
+    <ion-buttons slot="end">
+      <ion-select
+        [(ngModel)]="selectedCategoryIdFilter"
+        interface="popover"
+        placeholder="Filtrar"
+        class="filter-select"
+      >
+        <ion-select-option value="">Todas</ion-select-option>
+        <ion-select-option
+          *ngFor="let cat of categories"
+          [value]="cat.id"
+        >
+          {{ cat.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-input
-      placeholder="Nueva tarea..."
-      [(ngModel)]="newTaskTitle"
-      (keyup.enter)="addTask()">
-    </ion-input>
-    <ion-button (click)="addTask()" slot="end">
-      Agregar
-    </ion-button>
-  </ion-item>
 
-  <ion-list *ngIf="tasks.length > 0; else noTasksTemplate">
-    <ion-item *ngFor="let task of tasks; trackBy: trackByTaskId">
-      <ion-checkbox
-        slot="start"
-        [checked]="task.completed"
-        (ionChange)="toggleCompleted(task)">
-      </ion-checkbox>
+  <!-- CATEGORÍAS -->
+  <ion-card class="section-card">
+    <ion-card-header>
+      <div class="section-header">
+        <div>
+          <ion-card-title>Categorías</ion-card-title>
+          <ion-card-subtitle>Agrupa tus tareas por tema</ion-card-subtitle>
+        </div>
+        <ion-button
+          fill="outline"
+          color="primary"
+          size="small"
+          (click)="addCategoryFromPrompt()"
+        >
+          <span class="plus-text">+</span>
+        </ion-button>
+      </div>
+    </ion-card-header>
 
-      <ion-label [ngClass]="{ 'task-completed': task.completed }">
-        {{ task.title }}
-      </ion-label>
+    <ion-card-content>
+      <ion-list *ngIf="categories.length > 0; else noCategoriesTemplate">
+        <ion-item *ngFor="let cat of categories" class="category-item">
+          <ion-label>
+            <span class="category-name">{{ cat.name }}</span>
+          </ion-label>
 
-      <ion-button
-        fill="clear"
-        color="danger"
-        slot="end"
-        (click)="deleteTask(task)">
-        Eliminar
-      </ion-button>
-    </ion-item>
-  </ion-list>
+          <ion-button
+            fill="outline"
+            size="small"
+            (click)="renameCategory(cat)"
+          >
+            Editar
+          </ion-button>
 
-  <ng-template #noTasksTemplate>
-    <p>No tienes tareas aún. Agrega una arriba 👆</p>
-  </ng-template>
+          <ion-button
+            fill="outline"
+            size="small"
+            color="danger"
+            (click)="deleteCategory(cat)"
+          >
+            Eliminar
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ng-template #noCategoriesTemplate>
+        <p class="empty-text">
+          Aún no tienes categorías. Usa el botón <strong>+</strong> de la parte
+          superior para crear la primera.
+        </p>
+      </ng-template>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- TAREAS -->
+  <ion-card class="section-card">
+    <ion-card-header>
+      <div class="section-header">
+        <div>
+          <ion-card-title>Tareas</ion-card-title>
+          <ion-card-subtitle>
+            Marca como completadas o elimina lo que ya no necesitas
+          </ion-card-subtitle>
+        </div>
+        <ion-button
+          fill="outline"
+          color="primary"
+          size="small"
+          (click)="addTaskFromPrompt()"
+        >
+          <span class="plus-text">+</span>
+        </ion-button>
+      </div>
+    </ion-card-header>
+
+    <ion-card-content>
+
+      <ion-list *ngIf="filteredTasks.length > 0; else noTasksTemplate">
+        <ion-item
+          *ngFor="let task of filteredTasks; trackBy: trackByTaskId"
+          class="task-item"
+          [class.item-completed]="task.completed"
+        >
+          <ion-checkbox
+            slot="start"
+            [checked]="task.completed"
+            (ionChange)="toggleCompleted(task)"
+          >
+          </ion-checkbox>
+
+          <ion-label>
+            <div class="task-title">
+              {{ task.title }}
+            </div>
+            <div class="task-meta">
+              <span class="task-meta-label">Categoría:</span>
+
+              <ion-select
+                class="task-category-select"
+                interface="popover"
+                [(ngModel)]="task.categoryId"
+                (ionChange)="updateTaskCategory(task, $event.detail.value)"
+                placeholder="Sin categoría"
+              >
+                <ion-select-option value="">Sin categoría</ion-select-option>
+                <ion-select-option
+                  *ngFor="let cat of categories"
+                  [value]="cat.id"
+                >
+                  {{ cat.name }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+          </ion-label>
+
+          <ion-button
+            fill="outline"
+            color="danger"
+            size="small"
+            slot="end"
+            (click)="deleteTask(task)"
+          >
+            Eliminar
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <ng-template #noTasksTemplate>
+        <p class="empty-text">
+          No hay tareas para mostrar. Usa el botón <strong>+</strong> en el
+          título para crear una nueva.
+        </p>
+      </ng-template>
+
+    </ion-card-content>
+  </ion-card>
+
 </ion-content>
